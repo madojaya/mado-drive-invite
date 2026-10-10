@@ -134,6 +134,7 @@ input{font:inherit}
     <p>また一緒にお出かけできたらうれしいな。</p>
     <label for="noReason">よかったら理由を教えてね（任意）💗</label>
     <textarea id="noReason" rows="3" placeholder="無理に書かなくても大丈夫だよ…"></textarea>
+    <button class="primary" id="declineSendBtn" onclick="sendDecline()">回答を送信 💌</button>
     <p class="small" id="noEmailStatus">回答を通知しています…</p>
     <button class="secondary" onclick="restart()">最初に戻る</button>
   </section>
@@ -153,19 +154,28 @@ function noFirst(){
   b.style.transform='translate('+(Math.random()*100-50)+'px,'+(Math.random()*50-25)+'px)';
  }else show('s2');
 }
-async function decline(){
+function decline(){
   show('s8');
-  $('noEmailStatus').textContent='回答を通知しています…';
+  $('noEmailStatus').textContent='理由があれば書いて、送信ボタンを押してね 💗';
+}
+async function sendDecline(){
+  const button=$('declineSendBtn');
+  button.disabled=true;
+  button.textContent='送信しています…';
+  $('noEmailStatus').textContent='回答を送信しています…';
   try{
     await emailjs.send('service_b0b57zq','template_o54pyyy',{
       date: '未選択',
       drive: 'いいえ（今回は見送り）',
       reason: $('noReason').value.trim() || '理由の記入なし'
     });
-    $('noEmailStatus').textContent='回答を伝えました。ありがとう 💌';
+    $('noEmailStatus').textContent='回答を送信しました。ありがとう 💌';
+    button.textContent='送信済み 💌';
   }catch(e){
     console.error('EmailJS decline error:',e);
-    $('noEmailStatus').textContent='メールを送信できませんでした。';
+    $('noEmailStatus').textContent='メールを送信できませんでした。もう一度試してね。';
+    button.disabled=false;
+    button.textContent='回答を送信 💌';
   }
 }
 function restart(){noAttempts=0;chosenDate='';driveType='';show('s1')}
