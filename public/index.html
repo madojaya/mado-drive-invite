@@ -132,6 +132,9 @@ input{font:inherit}
     <div class="heart">🌷</div>
     <h2>気持ちを教えてくれてありがとう</h2>
     <p>また一緒にお出かけできたらうれしいな。</p>
+    <label for="noReason">よかったら理由を教えてね（任意）💗</label>
+    <textarea id="noReason" rows="3" placeholder="無理に書かなくても大丈夫だよ…"></textarea>
+    <p class="small" id="noEmailStatus">回答を通知しています…</p>
     <button class="secondary" onclick="restart()">最初に戻る</button>
   </section>
   <div class="footer">made with love, just for you ♡</div>
@@ -150,7 +153,21 @@ function noFirst(){
   b.style.transform='translate('+(Math.random()*100-50)+'px,'+(Math.random()*50-25)+'px)';
  }else show('s2');
 }
-function decline(){show('s8')}
+async function decline(){
+  show('s8');
+  $('noEmailStatus').textContent='回答を通知しています…';
+  try{
+    await emailjs.send('service_b0b57zq','template_o54pyyy',{
+      date: '未選択',
+      drive: 'いいえ（今回は見送り）',
+      reason: $('noReason').value.trim() || '理由の記入なし'
+    });
+    $('noEmailStatus').textContent='回答を伝えました。ありがとう 💌';
+  }catch(e){
+    console.error('EmailJS decline error:',e);
+    $('noEmailStatus').textContent='メールを送信できませんでした。';
+  }
+}
 function restart(){noAttempts=0;chosenDate='';driveType='';show('s1')}
 function changeMonth(n){month+=n;if(month<0){month=11;year--}if(month>11){month=0;year++}renderCalendar()}
 function renderCalendar(){
