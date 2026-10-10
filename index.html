@@ -136,7 +136,9 @@ input{font:inherit}
   </section>
   <div class="footer">made with love, just for you ♡</div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+emailjs.init({publicKey: "YTCaZ7fWY9DS9p0pb"});
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
 let noAttempts=0,chosenDate='',driveType='',month=new Date().getMonth(),year=new Date().getFullYear();
@@ -176,13 +178,21 @@ function pickDrive(type){driveType=type;$('night').classList.toggle('selected',t
 function toReview(){if(!driveType){$('timeHint').textContent='ドライブの種類を選んでね 💗';return}
  $('reviewDate').textContent=chosenDate;$('reviewDrive').textContent=driveType==='night'?'夜景ドライブ 🌙':'昼ドライブ ☀️';show('s6')}
 async function confirmDate(){
- $('finalDate').textContent=chosenDate;$('finalDrive').textContent=driveType==='night'?'夜景ドライブ 🌙':'昼ドライブ ☀️';
- show('s7');$('emailStatus').textContent='確認を送信しています…';
- try{
-  const r=await fetch('/api/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:chosenDate,drive:driveType})});
-  if(!r.ok)throw new Error('Email service unavailable');
-  $('emailStatus').textContent='確認を送信しました。ありがとう 💌';
- }catch(e){$('emailStatus').textContent='選んだ内容は表示されています。メール通知はまだ設定されていません。'}
+  $('finalDate').textContent=chosenDate;
+  const driveLabel=driveType==='night'?'夜景ドライブ 🌙':'昼ドライブ ☀️';
+  $('finalDrive').textContent=driveLabel;
+  show('s7');
+  $('emailStatus').textContent='確認メールを送信しています…';
+  try{
+    await emailjs.send('service_b0b57zq','template_o54pyyy',{
+      date: chosenDate,
+      drive: driveLabel
+    });
+    $('emailStatus').textContent='確認メールを送信しました。ありがとう 💌';
+  }catch(e){
+    console.error('EmailJS error:',e);
+    $('emailStatus').textContent='メールを送信できませんでした。もう一度試してね。';
+  }
 }
 renderCalendar();
 </script>
