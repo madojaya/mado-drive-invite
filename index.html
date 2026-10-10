@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff0f5">
+<title>マドとドライブ❤️</title>
+<style>
+:root{--pink:#ff6f9f;--deep:#e94d82;--pale:#fff0f5;--ink:#654353}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:"Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;color:var(--ink);background:linear-gradient(145deg,#fff7fa,#ffe2ed,#fff8ed);display:flex;align-items:center;justify-content:center;padding:22px;overflow-x:hidden}
+main{width:100%;max-width:520px;background:#ffffffdc;border:1px solid #fff;border-radius:30px;padding:30px 23px;text-align:center;box-shadow:0 18px 60px #d96e8c24;position:relative}
+h1{font-size:clamp(25px,6vw,34px);color:var(--deep);margin:5px 0 8px}
+h2{font-size:23px;margin:18px 0 12px}
+p{line-height:1.9}
+.heart{font-size:48px;animation:float 2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-7px)}}
+.sub{font-size:13px;color:#ad8293;letter-spacing:2px}
+.screen{display:none;animation:appear .35s ease}.screen.active{display:block}
+@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+button{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:14px 22px;font-weight:bold;transition:transform .18s,box-shadow .18s}
+button:active{transform:scale(.97)}
+.primary{background:linear-gradient(135deg,#ff83ad,#ed5187);color:white;box-shadow:0 6px 15px #ed518733}
+.secondary{background:#fff0f5;color:#c65d82;border:1px solid #ffd0df}
+.buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px 0 8px}
+.small{font-size:12px;color:#b28b9a}
+.car{font-size:42px;margin:10px}
+#noBtn{position:relative}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:18px 0}
+.dayname{font-size:12px;color:#b18094;padding:5px 0}
+.date{padding:10px 0;border-radius:12px;background:#fff0f5;color:#995a74;border:1px solid transparent;font-size:14px}
+.date:disabled{background:#f6f1f3;color:#d3c7cc;cursor:not-allowed;opacity:.7}
+.date.selected{background:var(--pink);color:white;box-shadow:0 4px 12px #ff6f9f55}
+.monthrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.monthrow button{padding:9px 13px}
+.choice{display:block;width:100%;padding:17px;margin:12px 0;text-align:left;border:1px solid #ffd1e0;background:#fff7fa;color:var(--ink);border-radius:18px}
+.choice.selected{border:2px solid var(--pink);background:#ffe7f0}
+.choice strong{font-size:17px}
+.choice span{display:block;font-size:13px;margin-top:5px;color:#a77d8e}
+.summary{background:#fff4f8;border-radius:18px;padding:15px;text-align:left;line-height:2}
+.footer{margin-top:25px;font-size:12px;color:#c29bab}
+input{font:inherit}
+</style>
+</head>
+<body>
+<main>
+  <div class="sub">A LITTLE DATE INVITATION</div>
+  <h1>マドとドライブ❤️</h1>
+  <div class="car">🚗🌸</div>
+
+  <section id="s1" class="screen active">
+    <div class="heart">💗</div>
+    <h2>今度、一緒に<br>ドライブに行かない？</h2>
+    <p>好きな音楽を聴きながら、<br>ふたりで素敵な時間を過ごしたいな。</p>
+    <div class="buttons">
+      <button class="primary" onclick="yes()">はい ❤️</button>
+      <button class="secondary" id="noBtn" onclick="noFirst()">いいえ 🙈</button>
+    </div>
+    <p class="small">きっと楽しい思い出になるよ ✨</p>
+  </section>
+
+  <section id="s2" class="screen">
+    <div class="heart">🥺</div>
+    <h2>ほんとに？</h2>
+    <p>マド、ちょっとだけ期待してたのに…💕</p>
+    <p>本当にいいの？</p>
+    <div class="buttons">
+      <button class="primary" onclick="yes()">やっぱり行く！❤️</button>
+      <button class="secondary" onclick="decline()">いいえ 🙈</button>
+    </div>
+  </section>
+
+  <section id="s3" class="screen">
+    <div class="heart">💖</div>
+    <h2>やったー！ありがとう！</h2>
+    <p>一緒にドライブできるの、うれしいな 🚗💕</p>
+    <p>次は、行く日を選んでね。</p>
+    <button class="primary" onclick="show('s4');renderCalendar()">日にちを選ぶ 📅</button>
+  </section>
+
+  <section id="s4" class="screen">
+    <div class="heart">📅</div>
+    <h2>いつ行こうか？</h2>
+    <p class="small">金曜日は18:00以降、土曜日・日曜日は18:00まで選べるよ。</p>
+    <div class="monthrow">
+      <button class="secondary" onclick="changeMonth(-1)">‹</button>
+      <strong id="monthTitle"></strong>
+      <button class="secondary" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="calendar" id="calendar"></div>
+    <p id="dateHint" class="small">ピンクの日付を選んでね 💗</p>
+    <button class="primary" onclick="toTime()">この日にする 💕</button>
+    <div class="buttons"><button class="secondary" onclick="show('s3')">戻る</button></div>
+  </section>
+
+  <section id="s5" class="screen">
+    <div class="heart">🌙</div>
+    <h2>どんなドライブがいい？</h2>
+    <button class="choice" id="night" onclick="pickDrive('night')"><strong>🌙 夜景ドライブ</strong><span>きらきらの夜景を一緒に見に行こう。</span></button>
+    <button class="choice" id="day" onclick="pickDrive('day')"><strong>☀️ 昼ドライブ</strong><span>景色を楽しみながら、のんびりお出かけ。</span></button>
+    <p id="timeHint" class="small">好きなほうを選んでね。</p>
+    <button class="primary" onclick="toReview()">確認する 💌</button>
+    <div class="buttons"><button class="secondary" onclick="show('s4')">日にちに戻る</button></div>
+  </section>
+
+  <section id="s6" class="screen">
+    <div class="heart">💌</div>
+    <h2>この予定でいい？</h2>
+    <div class="summary">
+      <div>📅 日にち：<strong id="reviewDate">未選択</strong></div>
+      <div>🚗 ドライブ：<strong id="reviewDrive">未選択</strong></div>
+    </div>
+    <p>ふたりの楽しい思い出になりますように ❤️</p>
+    <button class="primary" onclick="confirmDate()">この日で決定！💕</button>
+    <div class="buttons"><button class="secondary" onclick="show('s5')">戻って変更する</button></div>
+  </section>
+
+  <section id="s7" class="screen">
+    <div class="heart">💐</div>
+    <h2>予約完了！ありがとう ❤️</h2>
+    <p>一緒にドライブできるのが楽しみ！</p>
+    <div class="summary">
+      <div>📅 日にち：<strong id="finalDate"></strong></div>
+      <div>🚗 ドライブ：<strong id="finalDrive"></strong></div>
+    </div>
+    <p>素敵な一日にしようね。大好きな思い出になりますように 💗</p>
+    <p class="small" id="emailStatus">確認内容を保存しました。</p>
+  </section>
+
+  <section id="s8" class="screen">
+    <div class="heart">🌷</div>
+    <h2>気持ちを教えてくれてありがとう</h2>
+    <p>また一緒にお出かけできたらうれしいな。</p>
+    <button class="secondary" onclick="restart()">最初に戻る</button>
+  </section>
+  <div class="footer">made with love, just for you ♡</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+let noAttempts=0,chosenDate='',driveType='',month=new Date().getMonth(),year=new Date().getFullYear();
+function yes(){show('s3')}
+function noFirst(){
+ noAttempts++;
+ if(noAttempts===1){
+  const b=$('noBtn');b.textContent='つかまえてみて！🏃‍♀️';
+  b.style.transform='translate('+(Math.random()*100-50)+'px,'+(Math.random()*50-25)+'px)';
+ }else show('s2');
+}
+function decline(){show('s8')}
+function restart(){noAttempts=0;chosenDate='';driveType='';show('s1')}
+function changeMonth(n){month+=n;if(month<0){month=11;year--}if(month>11){month=0;year++}renderCalendar()}
+function renderCalendar(){
+ const cal=$('calendar');cal.innerHTML='';
+ $('monthTitle').textContent=year+'年 '+(month+1)+'月';
+ ['日','月','火','水','木','金','土'].forEach(d=>{let e=document.createElement('div');e.className='dayname';e.textContent=d;cal.appendChild(e)});
+ const first=new Date(year,month,1).getDay(),last=new Date(year,month+1,0).getDate();
+ for(let i=0;i<first;i++){cal.appendChild(document.createElement('div'))}
+ const today=new Date();today.setHours(0,0,0,0);
+ for(let d=1;d<=last;d++){
+  const dt=new Date(year,month,d),dow=dt.getDay(),b=document.createElement('button');
+  b.className='date';b.textContent=d;
+  const allowed=(dow===5||dow===6||dow===0)&&dt>=today;
+  b.disabled=!allowed;
+  if(dow===5)b.title='金曜日：18時以降';
+  if(dow===6||dow===0)b.title='土日：18時まで';
+  if(chosenDate===dateKey(dt))b.classList.add('selected');
+  b.onclick=()=>{chosenDate=dateKey(dt);$('dateHint').textContent=chosenDate+' を選んだよ 💗';renderCalendar()};
+  cal.appendChild(b);
+ }
+}
+function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function toTime(){if(!chosenDate){$('dateHint').textContent='先に日にちを選んでね 💗';return}show('s5')}
+function pickDrive(type){driveType=type;$('night').classList.toggle('selected',type==='night');$('day').classList.toggle('selected',type==='day');$('timeHint').textContent=type==='night'?'夜景ドライブだね 🌙✨':'昼ドライブだね ☀️💕'}
+function toReview(){if(!driveType){$('timeHint').textContent='ドライブの種類を選んでね 💗';return}
+ $('reviewDate').textContent=chosenDate;$('reviewDrive').textContent=driveType==='night'?'夜景ドライブ 🌙':'昼ドライブ ☀️';show('s6')}
+async function confirmDate(){
+ $('finalDate').textContent=chosenDate;$('finalDrive').textContent=driveType==='night'?'夜景ドライブ 🌙':'昼ドライブ ☀️';
+ show('s7');$('emailStatus').textContent='確認を送信しています…';
+ try{
+  const r=await fetch('/api/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:chosenDate,drive:driveType})});
+  if(!r.ok)throw new Error('Email service unavailable');
+  $('emailStatus').textContent='確認を送信しました。ありがとう 💌';
+ }catch(e){$('emailStatus').textContent='選んだ内容は表示されています。メール通知はまだ設定されていません。'}
+}
+renderCalendar();
+</script>
+</body>
+</html>
